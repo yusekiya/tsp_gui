@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    # make_distance_table('city_location/example1.dat')
     city_pos = np.loadtxt('city_location/example1.dat')
     dist_table = distance.cdist(city_pos, city_pos)
     path = nearest_neighbor(dist_table)
