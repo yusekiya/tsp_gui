@@ -82,7 +82,7 @@ def calc_total_dist(distance_table, path):
 
     Parameters
     ----------
-    distance_table : array_liek
+    distance_table : array_like
         2d array of distances between cities
 
     path : array_like
@@ -109,7 +109,7 @@ def plot_path(city_pos, path=None):
 
     Parameters
     ---------
-    city_pos : array_liek
+    city_pos : array_like
         2d array of city positions
 
     path : array_like
