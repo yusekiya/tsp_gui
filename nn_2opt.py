@@ -8,9 +8,12 @@ import matplotlib.pyplot as plt
 def main():
     city_pos = np.loadtxt('city_location/example1.dat')
     dist_table = distance.cdist(city_pos, city_pos)
+    plot_path(city_pos)
+    # Initial guess with the nearest neighbor method
     path = nearest_neighbor(dist_table)
     plot_path(city_pos, path)
     print('total dist: {0}'.format(calc_total_dist(dist_table, path)))
+    # Refine the initial guess
     opt_2(dist_table, path)
     plot_path(city_pos, path)
     print('total dist: {0}'.format(calc_total_dist(dist_table, path)))
@@ -101,8 +104,7 @@ def calc_total_dist(distance_table, path):
     return sum
 
 
-
-def plot_path(city_pos, path):
+def plot_path(city_pos, path=None):
     '''Plot path
 
     Parameters
@@ -116,15 +118,16 @@ def plot_path(city_pos, path):
     plt.axis('equal')
     plt.xlim(0.0, 1.0)
     plt.ylim(0.0, 1.0)
-    len = path.shape[0]
-    for i in range(len):
-        if i == len - 1:
-            i1 = 0
-        else:
-            i1 = i + 1
-        city1 = city_pos[path[i]]
-        city2 = city_pos[path[i1]]
-        plt.plot([city1[0], city2[0]], [city1[1], city2[1]], "k-", lw=2)
+    if path is not None:
+        len = path.shape[0]
+        for i in range(len):
+            if i == len - 1:
+                i1 = 0
+            else:
+                i1 = i + 1
+            city1 = city_pos[path[i]]
+            city2 = city_pos[path[i1]]
+            plt.plot([city1[0], city2[0]], [city1[1], city2[1]], "k-", lw=2)
     plt.plot(city_pos[:,0], city_pos[:,1], "o", markersize=10)
     plt.show()
 
