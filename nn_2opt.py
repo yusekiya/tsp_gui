@@ -115,7 +115,6 @@ def plot_path(city_pos, path=None):
     path : array_like
         1d array representing path
     '''
-    plt.axis('equal')
     plt.xlim(0.0, 1.0)
     plt.ylim(0.0, 1.0)
     if path is not None:
@@ -128,7 +127,9 @@ def plot_path(city_pos, path=None):
             city1 = city_pos[path[i]]
             city2 = city_pos[path[i1]]
             plt.plot([city1[0], city2[0]], [city1[1], city2[1]], "k-", lw=2)
-    plt.plot(city_pos[:,0], city_pos[:,1], "o", markersize=10)
+    plt.plot(city_pos[0,0], city_pos[0,1], "ro", markersize=10)
+    plt.plot(city_pos[1:,0], city_pos[1:,1], "o", markersize=10)
+    plt.gca().set_aspect('equal')
     plt.show()
 
 
