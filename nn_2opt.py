@@ -3,20 +3,22 @@ import scipy as sp
 from scipy.spatial import distance
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from numpy.random import rand
 
 
 def main():
-    city_pos = np.loadtxt('city_location/example1.dat')
+    # city_pos = np.loadtxt('city_location/example1.dat')
+    city_pos = rand(500, 2)
     dist_table = distance.cdist(city_pos, city_pos)
     plot_path(city_pos)
     # Initial guess with the nearest neighbor method
     path = nearest_neighbor(dist_table)
     plot_path(city_pos, path)
-    print('total dist: {0}'.format(calc_total_dist(dist_table, path)))
+    print('total distance (initial guess): {0}'.format(calc_total_dist(dist_table, path)))
     # Refine the initial guess
     opt_2(dist_table, path)
     plot_path(city_pos, path)
-    print('total dist: {0}'.format(calc_total_dist(dist_table, path)))
+    print('total distance (after 2-opt): {0}'.format(calc_total_dist(dist_table, path)))
 
 
 def nearest_neighbor(distance_table):
