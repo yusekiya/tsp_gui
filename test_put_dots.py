@@ -5,15 +5,13 @@ import matplotlib.pyplot as plt
 
 def main():
     citymap = CityMap()
-    print(citymap.xdata)
-    print(citymap.ydata)
+    print('x data:', citymap.getx())
+    print('y data:', citymap.gety())
     return 0
 
 
 class CityMap:
     def __init__(self):
-        self.xdata = []
-        self.ydata = []
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(111)
         self.ax.set_xlim(0.0, 1.0)
@@ -30,8 +28,6 @@ class CityMap:
         if event.button != 1: return
         x = event.xdata
         y = event.ydata
-        self.xdata.append(x)
-        self.ydata.append(y)
         self.ax.plot(x, y, 'bo', markersize=10, picker=5)
         plt.draw()
 
@@ -39,11 +35,16 @@ class CityMap:
         mouseevent = event.mouseevent
         if mouseevent.button != 3: return
         thisline = event.artist
-        ind = event.ind[0]
-        del self.xdata[ind]
-        del self.ydata[ind]
         thisline.remove()
         plt.draw()
+
+    def getx(self):
+        lines = self.ax.lines
+        return np.array([line.get_xdata() for line in lines]).flatten()
+
+    def gety(self):
+        lines = self.ax.lines
+        return np.array([line.get_ydata() for line in lines]).flatten()
 
     def disconnect(self):
         self.fig.canvas.mpl_disconnect(self.cid_putdot)
