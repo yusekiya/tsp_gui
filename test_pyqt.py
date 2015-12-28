@@ -12,7 +12,7 @@ class MainWindow(QWidget):
         super(MainWindow, self).__init__()
         self.init_ui()
         self.show()
-        
+
     def init_ui(self):
         self.setWindowTitle('TSP')
         self.setGeometry(100, 100, 1500, 1000)
@@ -29,7 +29,7 @@ class MainWindow(QWidget):
         self.layout1.addLayout(self.layout_button)
         self.setLayout(self.layout1)
 
-        
+
 class CityMap(FigureCanvasQTAgg):
     def __init__(self, parent=None):
         self.fig = plt.figure()
@@ -55,14 +55,14 @@ class CityMap(FigureCanvasQTAgg):
         x = event.xdata
         y = event.ydata
         self.ax.plot(x, y, 'bo', markersize=10, picker=5)
-        plt.draw()
+        self.draw()
 
     def remove_city(self, event):
         mouseevent = event.mouseevent
         if mouseevent.button != 3: return
         thisline = event.artist
         thisline.remove()
-        plt.draw()
+        self.draw()
 
     def getx(self):
         lines = self.ax.lines
@@ -77,15 +77,17 @@ class CityMap(FigureCanvasQTAgg):
         if event.button != 2: return
         self.ax.cla()
         self.init_axes()
-        plt.draw()
+        self.draw()
 
     def disconnect(self):
         self.fig.canvas.mpl_disconnect(self.cid_putdot)
         self.fig.canvas.mpl_disconnect(self.cid_remove)
         self.fig.canvas.mpl_disconnect(self.cid_clear)
 
-        
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
-    sys.exit(app.exec_())
+    # sys.exit(app.exec_())
+    app.exec_()
+    print(window.canvas.getx())
