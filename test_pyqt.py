@@ -17,17 +17,29 @@ class MainWindow(QWidget):
         self.setWindowTitle('TSP')
         self.setGeometry(100, 100, 1500, 1000)
         self.canvas = CityMap(self)
-        self.button1 = QPushButton('button1')
-        self.button2 = QPushButton('button2')
-        self.button3 = QPushButton('button3')
+        self.button1 = QPushButton('Clear all')
+        self.button1.clicked.connect(self.clear_fig)
+        self.button2 = QPushButton('Nearest neighbor method')
+        self.button3 = QPushButton('2-opt method')
+        self.button3.setEnabled(False)
         self.layout1 = QVBoxLayout()
-        self.layout_button = QHBoxLayout()
         self.layout1.addWidget(self.canvas)
+        self.layout_button = QHBoxLayout()
         self.layout_button.addWidget(self.button1)
         self.layout_button.addWidget(self.button2)
         self.layout_button.addWidget(self.button3)
         self.layout1.addLayout(self.layout_button)
         self.setLayout(self.layout1)
+
+    def clear_fig(self):
+        self.canvas.clear_all()
+        self.button3.setEnabled(False)
+        
+    def exec_nn(self):
+        X = self.canvas.getx()
+        Y = self.canvas.gety()
+        city_pos = np.vstack((X, Y)).transpose()
+        print(city_pos)
 
 
 class CityMap(FigureCanvasQTAgg):
@@ -39,7 +51,6 @@ class CityMap(FigureCanvasQTAgg):
         self.cid_putdot = self.fig.canvas.mpl_connect('button_press_event', self.put_city)
         self.cid_remove = self.fig.canvas.mpl_connect('pick_event', self.remove_city)
         self.cid_clear = self.fig.canvas.mpl_connect('button_press_event', self.clear_dots)
-        # plt.show()
 
     def init_axes(self):
         self.ax = self.fig.add_subplot(111)
@@ -72,9 +83,13 @@ class CityMap(FigureCanvasQTAgg):
         lines = self.ax.lines
         return np.array([line.get_ydata() for line in lines]).flatten()
 
-    def clear_dots(self, event):
+    def clear_dots(self, event=False):
+        if not event: return
         if event.inaxes != self.ax: return
         if event.button != 2: return
+        self.clear_all()
+
+    def clear_all(self):
         self.ax.cla()
         self.init_axes()
         self.draw()
