@@ -20,6 +20,7 @@ class MainWindow(QWidget):
         self.button1 = QPushButton('Clear all')
         self.button1.clicked.connect(self.clear_fig)
         self.button2 = QPushButton('Nearest neighbor method')
+        self.button2.clicked.connect(self.exec_nn)
         self.button3 = QPushButton('2-opt method')
         self.button3.setEnabled(False)
         self.layout1 = QVBoxLayout()
@@ -33,9 +34,13 @@ class MainWindow(QWidget):
 
     def clear_fig(self):
         self.canvas.clear_all()
+        self.canvas.connect()
+        self.button2.setEnabled(True)
         self.button3.setEnabled(False)
         
     def exec_nn(self):
+        self.canvas.disconnect()
+        self.button2.setEnabled(False)
         X = self.canvas.getx()
         Y = self.canvas.gety()
         city_pos = np.vstack((X, Y)).transpose()
@@ -48,9 +53,7 @@ class CityMap(FigureCanvasQTAgg):
         super(CityMap, self).__init__(self.fig)
         self.setParent(parent)
         self.init_axes()
-        self.cid_putdot = self.fig.canvas.mpl_connect('button_press_event', self.put_city)
-        self.cid_remove = self.fig.canvas.mpl_connect('pick_event', self.remove_city)
-        self.cid_clear = self.fig.canvas.mpl_connect('button_press_event', self.clear_dots)
+        self.connect()
 
     def init_axes(self):
         self.ax = self.fig.add_subplot(111)
@@ -93,6 +96,11 @@ class CityMap(FigureCanvasQTAgg):
         self.ax.cla()
         self.init_axes()
         self.draw()
+
+    def connect(self):
+        self.cid_putdot = self.fig.canvas.mpl_connect('button_press_event', self.put_city)
+        self.cid_remove = self.fig.canvas.mpl_connect('pick_event', self.remove_city)
+        self.cid_clear = self.fig.canvas.mpl_connect('button_press_event', self.clear_dots)
 
     def disconnect(self):
         self.fig.canvas.mpl_disconnect(self.cid_putdot)
