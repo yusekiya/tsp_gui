@@ -1,3 +1,4 @@
+import time
 import sys
 import numpy as np
 from scipy.spatial import distance
@@ -14,6 +15,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 class MainWindow(QWidget):
     def __init__(self):
         super(MainWindow, self).__init__()
+        self.delay_nn = 0.5
+        self.delay_opt2 = 0.5
         self.init_ui()
         self.show()
 
@@ -42,8 +45,9 @@ class MainWindow(QWidget):
         self.button3.setEnabled(False)
 
     def exec_nn(self):
-        self.canvas.nearest_neighbor()
+        self.canvas.nearest_neighbor(self.delay_nn)
         self.button2.setEnabled(False)
+        self.button3.setEnabled(True)
 
 class CityMap(FigureCanvasQTAgg):
     def __init__(self, parent=None):
@@ -126,10 +130,36 @@ class CityMap(FigureCanvasQTAgg):
         self.fig.canvas.mpl_disconnect(self.cid_remove)
         self.fig.canvas.mpl_disconnect(self.cid_clear)
 
+    def nearest_neighbor(self, delay=0.0):
+        self.fix_instance()
+        for frame in range(self.num_city):
+            if frame < self.num_city - 1:
+                current_city = self.path[frame]
+                remain_city = self.path[frame+1:]
+                remain_distance = np.take(self.dist_table[current_city], remain_city)
+                min_pos = np.argmin(remain_distance)
+                self.path[frame+1], remain_city[min_pos] = remain_city[min_pos], self.path[frame+1]
+                if frame != 0:
+                    self.ax.lines[-1].set_color('b')
+                self.plot_line_between_cities(current_city, self.path[frame+1])
+                self.draw()
+                self.fig.canvas.flush_events()
+                time.sleep(delay)
+            else:
+                self.ax.lines[-1].set_color('b')
+                self.plot_line_between_cities(self.path[frame], self.path[0])
+                self.draw()
+                self.fig.canvas.flush_events()
+                time.sleep(delay)
+                self.ax.lines[-1].set_color('b')
+                self.draw()
+
+    def plot_line_between_cities(self, cind1, cind2):
+        city1 = self.city_pos[cind1]
+        city2 = self.city_pos[cind2]
+        self.ax.plot([city1[0], city2[0]], [city1[1], city2[1]], "r-")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = MainWindow()
-    # sys.exit(app.exec_())
-    app.exec_()
-    print(window.canvas.getx())
+    sys.exit(app.exec_())
