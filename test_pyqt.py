@@ -1,11 +1,15 @@
 import sys
 import numpy as np
+from scipy.spatial import distance
 import matplotlib as mpl
 mpl.use('Qt5Agg')
 import matplotlib.pyplot as plt
+from matplotlib import animation
 from matplotlib.ticker import NullLocator
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout, QPushButton
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
+from PyQt5.QtWidgets import (QApplication, QWidget, QHBoxLayout,
+                             QVBoxLayout, QPushButton)
+from PyQt5 import QtCore
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -34,21 +38,19 @@ class MainWindow(QWidget):
 
     def clear_fig(self):
         self.canvas.clear_all()
-        self.canvas.connect()
         self.button2.setEnabled(True)
         self.button3.setEnabled(False)
-        
-    def exec_nn(self):
-        self.canvas.disconnect()
-        self.button2.setEnabled(False)
-        X = self.canvas.getx()
-        Y = self.canvas.gety()
-        city_pos = np.vstack((X, Y)).transpose()
-        print(city_pos)
 
+    def exec_nn(self):
+        self.canvas.nearest_neighbor()
+        self.button2.setEnabled(False)
 
 class CityMap(FigureCanvasQTAgg):
     def __init__(self, parent=None):
+        self.num_city = None
+        self.city_pos = None
+        self.dist_table = None
+        self.path = None
         self.fig = plt.figure()
         super(CityMap, self).__init__(self.fig)
         self.setParent(parent)
@@ -93,9 +95,26 @@ class CityMap(FigureCanvasQTAgg):
         self.clear_all()
 
     def clear_all(self):
+        self.unfix_instance()
         self.ax.cla()
         self.init_axes()
         self.draw()
+
+    def fix_instance(self):
+        self.num_city = len(self.ax.lines)
+        X = self.getx()
+        Y = self.gety()
+        self.city_pos = np.vstack((X, Y)).transpose()
+        self.dist_table = distance.cdist(self.city_pos, self.city_pos)
+        self.path = np.array(range(self.num_city))
+        self.disconnect()
+
+    def unfix_instance(self):
+        self.num_city = None
+        self.city_pos = None
+        self.dist_table = None
+        self.path = None
+        self.connect()
 
     def connect(self):
         self.cid_putdot = self.fig.canvas.mpl_connect('button_press_event', self.put_city)
