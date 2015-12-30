@@ -139,14 +139,13 @@ class CityMap(FigureCanvasQTAgg):
                 remain_distance = np.take(self.dist_table[current_city], remain_city)
                 min_pos = np.argmin(remain_distance)
                 self.path[frame+1], remain_city[min_pos] = remain_city[min_pos], self.path[frame+1]
-                if frame != 0:
-                    self.ax.lines[-1].set_color('b')
                 self.plot_line_between_cities(current_city, self.path[frame+1])
                 self.draw()
                 self.fig.canvas.flush_events()
                 time.sleep(delay)
-            else:
                 self.ax.lines[-1].set_color('b')
+                self.draw()
+            else:
                 self.plot_line_between_cities(self.path[frame], self.path[0])
                 self.draw()
                 self.fig.canvas.flush_events()
