@@ -10,6 +10,7 @@ from matplotlib.ticker import NullLocator
 from PyQt5.QtWidgets import (QApplication, QWidget, QHBoxLayout,
                              QVBoxLayout, QGridLayout, QPushButton, QLabel,
                              QLineEdit)
+from PyQt5.QtGui import QDoubleValidator
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 
 class MainWindow(QWidget):
@@ -34,7 +35,9 @@ class MainWindow(QWidget):
         self.label1 = QLabel('Delay (sec)')
         self.label2 = QLabel('Delay (sec)')
         self.delaytime1 = QLineEdit()
+        self.delaytime1.setValidator(QDoubleValidator(0.0, 2.0, 3))
         self.delaytime2 = QLineEdit()
+        self.delaytime2.setValidator(QDoubleValidator(0.0, 2.0, 3))
         self.layout1 = QVBoxLayout()
         self.layout1.addWidget(self.canvas)
         self.grid = QGridLayout()
