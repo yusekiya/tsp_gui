@@ -29,6 +29,7 @@ class MainWindow(QWidget):
         self.button2 = QPushButton('Nearest neighbor method')
         self.button2.clicked.connect(self.exec_nn)
         self.button3 = QPushButton('2-opt method')
+        self.button3.clicked.connect(self.exec_opt2)
         self.button3.setEnabled(False)
         self.layout1 = QVBoxLayout()
         self.layout1.addWidget(self.canvas)
@@ -48,6 +49,11 @@ class MainWindow(QWidget):
         self.canvas.nearest_neighbor(self.delay_nn)
         self.button2.setEnabled(False)
         self.button3.setEnabled(True)
+
+    def exec_opt2(self):
+        self.canvas.opt2(self.delay_opt2)
+        self.button3.setEnabled(False)
+
 
 class CityMap(FigureCanvasQTAgg):
     def __init__(self, parent=None):
@@ -157,6 +163,53 @@ class CityMap(FigureCanvasQTAgg):
         city1 = self.city_pos[cind1]
         city2 = self.city_pos[cind2]
         self.ax.plot([city1[0], city2[0]], [city1[1], city2[1]], style)
+
+    def opt2(self, delay=0.0):
+        size = self.num_city
+        while True:
+            count = 0
+            for i in range(size-2):
+                i1 = i + 1
+                for j in range(i+2, size):
+                    if j == size - 1:
+                        j1 = 0
+                    else:
+                        j1 = j + 1
+                    if i != 0 or j1 != 0:
+                        l1 = self.dist_table[self.path[i], self.path[i1]]
+                        l2 = self.dist_table[self.path[j], self.path[j1]]
+                        l3 = self.dist_table[self.path[i], self.path[j]]
+                        l4 = self.dist_table[self.path[i1], self.path[j1]]
+                        if l1 + l2 > l3 + l4:
+                            lines = self.ax.lines[self.num_city::]
+                            l1_lobj = self.get_matching_path(lines, self.path[i], self.path[i1])
+                            l2_lobj = self.get_matching_path(lines, self.path[j], self.path[j1])
+                            l1_lobj.set_color('r')
+                            l2_lobj.set_color('r')
+                            self.draw()
+                            self.fig.canvas.flush_events()
+                            new_path = self.path[i1:j+1]
+                            self.path[i1:j+1] = new_path[::-1]
+                            time.sleep(delay)
+                            l1_lobj.remove()
+                            l2_lobj.remove()
+                            self.plot_line_between_cities(self.path[i], self.path[i1], style='b-')
+                            self.plot_line_between_cities(self.path[j], self.path[j1], style='b-')
+                            self.draw()
+                            self.fig.canvas.flush_events()
+                            count += 1
+            if count == 0: break
+
+    def get_matching_path(self, lines, cind1, cind2):
+        city1_cood = self.city_pos[cind1]
+        city2_cood = self.city_pos[cind2]
+        path_data = np.vstack((city1_cood, city2_cood))
+        for line in lines:
+            line_data = line.get_xydata()
+            if np.array_equal(path_data, line_data) or\
+               np.array_equal(path_data, line_data[::-1, ...]):
+                return line
+    
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
