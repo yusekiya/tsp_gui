@@ -8,15 +8,16 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 from matplotlib.ticker import NullLocator
 from PyQt5.QtWidgets import (QApplication, QWidget, QHBoxLayout,
-                             QVBoxLayout, QPushButton)
+                             QVBoxLayout, QGridLayout, QPushButton, QLabel,
+                             QLineEdit)
 from PyQt5 import QtCore
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 
 class MainWindow(QWidget):
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.delay_nn = 0.5
-        self.delay_opt2 = 0.5
+        self.delay_nn = 0.0
+        self.delay_opt2 = 0.0
         self.init_ui()
         self.show()
 
@@ -31,13 +32,25 @@ class MainWindow(QWidget):
         self.button3 = QPushButton('2-opt method')
         self.button3.clicked.connect(self.exec_opt2)
         self.button3.setEnabled(False)
+        self.label1 = QLabel('Delay (sec)')
+        self.label2 = QLabel('Delay (sec)')
+        self.delaytime1 = QLineEdit()
+        self.delaytime2 = QLineEdit()
         self.layout1 = QVBoxLayout()
         self.layout1.addWidget(self.canvas)
-        self.layout_button = QHBoxLayout()
-        self.layout_button.addWidget(self.button1)
-        self.layout_button.addWidget(self.button2)
-        self.layout_button.addWidget(self.button3)
-        self.layout1.addLayout(self.layout_button)
+        self.grid = QGridLayout()
+        self.grid.addWidget(self.button1, 0, 0)
+        self.grid.addWidget(self.button2, 0, 1)
+        self.grid.addWidget(self.button3, 0, 2)
+        self.box1 = QHBoxLayout()
+        self.box2 = QHBoxLayout()
+        self.box1.addWidget(self.label1)
+        self.box1.addWidget(self.delaytime1)
+        self.box2.addWidget(self.label2)
+        self.box2.addWidget(self.delaytime2)
+        self.grid.addLayout(self.box1, 1, 1)
+        self.grid.addLayout(self.box2, 1, 2)
+        self.layout1.addLayout(self.grid)
         self.setLayout(self.layout1)
 
     def clear_fig(self):
@@ -46,11 +59,21 @@ class MainWindow(QWidget):
         self.button3.setEnabled(False)
 
     def exec_nn(self):
+        delaytime = self.delaytime1.text()
+        if delaytime == '':
+            self.delay_nn = 0.0
+        else:
+            self.delay_nn = float(delaytime)
         self.canvas.nearest_neighbor(self.delay_nn)
         self.button2.setEnabled(False)
         self.button3.setEnabled(True)
 
     def exec_opt2(self):
+        delaytime = self.delaytime2.text()
+        if delaytime == '':
+            self.delay_opt2 = 0.0
+        else:
+            self.delay_opt2 = float(delaytime)
         self.canvas.opt2(self.delay_opt2)
         self.button3.setEnabled(False)
 
