@@ -1,1 +1,5 @@
 notebook/
+__pycache__/
+build/
+nn_2opt.py
+test_put_dots.py
