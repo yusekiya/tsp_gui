@@ -86,6 +86,8 @@ class CityMap(FigureCanvasQTAgg):
         self.city_pos = None
         self.dist_table = None
         self.path = None
+        self.init_dist = None
+        self.current_dist = None
         self.fig = plt.figure()
         super(CityMap, self).__init__(self.fig)
         self.setParent(parent)
@@ -99,6 +101,9 @@ class CityMap(FigureCanvasQTAgg):
         self.ax.set_aspect('equal')
         self.ax.xaxis.set_major_locator(NullLocator())
         self.ax.yaxis.set_major_locator(NullLocator())
+        self.dist_text = self.ax.text(1.01, 1.0,
+                                      'Initial distance\n\n\nCurrent distance\n',
+                                      va='top')
 
     def put_city(self, event):
         if event.inaxes != self.ax: return
@@ -150,6 +155,8 @@ class CityMap(FigureCanvasQTAgg):
         self.city_pos = None
         self.dist_table = None
         self.path = None
+        self.init_dist = None
+        self.current_dist = None
 
     def connect(self):
         self.cid_putdot = self.fig.canvas.mpl_connect('button_press_event', self.put_city)
@@ -183,6 +190,8 @@ class CityMap(FigureCanvasQTAgg):
                 time.sleep(delay)
                 self.ax.lines[-1].set_color('b')
                 self.draw()
+        self.init_dist = self.calc_total_dist()
+        self.update_distance_displayed()
 
     def plot_line_between_cities(self, cind1, cind2, style='r-'):
         city1 = self.city_pos[cind1]
@@ -230,6 +239,8 @@ class CityMap(FigureCanvasQTAgg):
                             self.fig.canvas.flush_events()
                             count += 1
             if count == 0: break
+        self.current_dist = self.calc_total_dist()
+        self.update_distance_displayed()
 
     def get_matching_path(self, lines, cind1, cind2):
         city1_cood = self.city_pos[cind1]
@@ -251,6 +262,18 @@ class CityMap(FigureCanvasQTAgg):
                 i1 = i + 1
             sum += self.dist_table[self.path[i], self.path[i1]]
         return sum
+
+    def update_distance_displayed(self):
+        if self.init_dist is not None:
+            if self.current_dist is not None:
+                self.dist_text.set_text('Initial distance\n{0:.4f}\n\n'\
+                                        'Current distance\n{1:.4f}'\
+                                        .format(self.init_dist, self.current_dist))
+            else:
+                self.dist_text.set_text('Initial distance\n{0:.4f}\n\n'\
+                                        'Current distance\n'\
+                                        .format(self.init_dist))
+            self.draw()
 
 
 if __name__ == '__main__':
