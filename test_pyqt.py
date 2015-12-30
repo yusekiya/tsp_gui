@@ -216,11 +216,16 @@ class CityMap(FigureCanvasQTAgg):
                             self.fig.canvas.flush_events()
                             new_path = self.path[i1:j+1]
                             self.path[i1:j+1] = new_path[::-1]
-                            time.sleep(delay)
+                            time.sleep(delay/2.0)
                             l1_lobj.remove()
                             l2_lobj.remove()
-                            self.plot_line_between_cities(self.path[i], self.path[i1], style='b-')
-                            self.plot_line_between_cities(self.path[j], self.path[j1], style='b-')
+                            line1 = self.plot_line_between_cities(self.path[i], self.path[i1], style='r-')
+                            line2 = self.plot_line_between_cities(self.path[j], self.path[j1], style='r-')
+                            self.draw()
+                            self.fig.canvas.flush_events()
+                            time.sleep(delay/2.0)
+                            line1.set_color('b')
+                            line2.set_color('b')
                             self.draw()
                             self.fig.canvas.flush_events()
                             count += 1
