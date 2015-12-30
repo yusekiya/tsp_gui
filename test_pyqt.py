@@ -187,7 +187,8 @@ class CityMap(FigureCanvasQTAgg):
     def plot_line_between_cities(self, cind1, cind2, style='r-'):
         city1 = self.city_pos[cind1]
         city2 = self.city_pos[cind2]
-        self.ax.plot([city1[0], city2[0]], [city1[1], city2[1]], style)
+        line, = self.ax.plot([city1[0], city2[0]], [city1[1], city2[1]], style)
+        return line
 
     def opt2(self, delay=0.0):
         size = self.num_city
