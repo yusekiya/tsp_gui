@@ -10,7 +10,6 @@ from matplotlib.ticker import NullLocator
 from PyQt5.QtWidgets import (QApplication, QWidget, QHBoxLayout,
                              QVBoxLayout, QGridLayout, QPushButton, QLabel,
                              QLineEdit)
-from PyQt5 import QtCore
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 
 class MainWindow(QWidget):
