@@ -136,20 +136,20 @@ class CityMap(FigureCanvasQTAgg):
         self.draw()
 
     def fix_instance(self):
+        self.disconnect()
         self.num_city = len(self.ax.lines)
         X = self.getx()
         Y = self.gety()
         self.city_pos = np.vstack((X, Y)).transpose()
         self.dist_table = distance.cdist(self.city_pos, self.city_pos)
         self.path = np.array(range(self.num_city))
-        self.disconnect()
 
     def unfix_instance(self):
+        self.connect()
         self.num_city = None
         self.city_pos = None
         self.dist_table = None
         self.path = None
-        self.connect()
 
     def connect(self):
         self.cid_putdot = self.fig.canvas.mpl_connect('button_press_event', self.put_city)
