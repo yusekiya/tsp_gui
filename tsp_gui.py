@@ -23,7 +23,7 @@ class MainWindow(QWidget):
 
     def init_ui(self):
         self.setWindowTitle('TSP')
-        self.setGeometry(0, 0, 1200, 800)
+        self.setGeometry(0, 30, 1200, 800)
         self.canvas = CityMap(self)
         self.button1 = QPushButton('Clear all')
         self.button1.clicked.connect(self.clear_fig)
