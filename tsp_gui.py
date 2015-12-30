@@ -240,7 +240,18 @@ class CityMap(FigureCanvasQTAgg):
             if np.array_equal(path_data, line_data) or\
                np.array_equal(path_data, line_data[::-1, ...]):
                 return line
-    
+
+    def calc_total_dist(self):
+        size = self.num_city
+        sum = 0.0
+        for i in range(size):
+            if i == size - 1:
+                i1 = 0
+            else:
+                i1 = i + 1
+            sum += self.dist_table[self.path[i], self.path[i1]]
+        return sum
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
