@@ -19,7 +19,4 @@ algorithm and the 2-opt method.
 
 ## Windows binary
 
-Binary for windows 64-bit is [here][1].
-Unzip and execute tsp_gui.exe.
-
-[1]: https://github.com/yusekiya/tsp_gui/releases/download/v1.1/tsp_win64.zip
+Removed
