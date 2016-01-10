@@ -5,13 +5,13 @@ from scipy.spatial import distance
 import matplotlib as mpl
 mpl.use('Qt4Agg')
 import matplotlib.pyplot as plt
-from matplotlib import animation
 from matplotlib.ticker import NullLocator
-from PyQt4.QtGui import (QApplication, QWidget, QHBoxLayout,
-                             QVBoxLayout, QGridLayout, QPushButton, QLabel,
-                             QLineEdit)
-from PyQt4.QtGui import QDoubleValidator
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
+from PyQt4.QtGui import (QApplication, QWidget, QHBoxLayout,
+                         QVBoxLayout, QGridLayout, QPushButton, QLabel,
+                         QLineEdit)
+from PyQt4.QtGui import QDoubleValidator
+
 
 class MainWindow(QWidget):
     def __init__(self):
