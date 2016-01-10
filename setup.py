@@ -5,8 +5,8 @@ base = None
 if sys.platform == "win32":
     base = "Win32GUI"
 
-    build_exe_options = {'packages': ['matplotlib.backends.backend_qt4agg',
-                                      'scipy']}
+build_exe_options = {'packages': ['matplotlib.backends.backend_qt4agg',
+                                    'scipy']}
 
 def load_scipy_patched(finder, module):
     """the scipy module loads items within itself in a way that causes
