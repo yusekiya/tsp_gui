@@ -1,7 +1,6 @@
 import time
 import sys
 import numpy as np
-from scipy.spatial import distance
 import matplotlib as mpl
 mpl.use('Qt4Agg')
 import matplotlib.pyplot as plt
@@ -146,7 +145,7 @@ class CityMap(FigureCanvasQTAgg):
         X = self.getx()
         Y = self.gety()
         self.city_pos = np.vstack((X, Y)).transpose()
-        self.dist_table = distance.cdist(self.city_pos, self.city_pos)
+        self.dist_table = get_dist_table(self.city_pos)
         self.path = np.array(range(self.num_city))
 
     def unfix_instance(self):
@@ -274,6 +273,10 @@ class CityMap(FigureCanvasQTAgg):
                                         'Current distance\n'\
                                         .format(self.init_dist))
             self.draw()
+
+
+def get_dist_table(city_pos):
+    return np.sqrt(((city_pos[:,np.newaxis] - city_pos)**2).sum(axis=2))
 
 
 if __name__ == '__main__':

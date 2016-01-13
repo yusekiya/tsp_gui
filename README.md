@@ -8,7 +8,6 @@ and the 2-opt method for the traveling salesman problem.
 ## Requirements
 - Python 3.4+
 - Numpy
-- Scipy
 - Matplotlib
 - Qt4
 - PyQt4
