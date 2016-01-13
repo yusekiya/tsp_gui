@@ -132,7 +132,8 @@ class CityMap(FigureCanvasQTAgg):
             return
         x = event.xdata
         y = event.ydata
-        self.ax.plot(x, y, 'bo', markersize=10, picker=5)
+        self.ax.plot(x, y, 'bo', markersize=10, picker=7)
+        self.ax.lines[0].set_color('r')
         self.draw()
 
     def remove_city(self, event):
@@ -140,6 +141,8 @@ class CityMap(FigureCanvasQTAgg):
         if mouseevent.button != 3: return
         thisline = event.artist
         thisline.remove()
+        if len(self.ax.lines) != 0:
+            self.ax.lines[0].set_color('r')
         self.draw()
 
     def select_init_city(self, event):
@@ -149,7 +152,10 @@ class CityMap(FigureCanvasQTAgg):
             return
         thisline = event.artist
         self.ax.lines.remove(thisline)
+        self.ax.lines[0].set_color('b')
         self.ax.lines.insert(0, thisline)
+        self.ax.lines[0].set_color('r')
+        self.draw()
 
     def getx(self):
         lines = self.ax.lines
