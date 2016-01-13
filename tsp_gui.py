@@ -31,6 +31,9 @@ class MainWindow(QWidget):
         self.button3 = QPushButton('2-opt method')
         self.button3.clicked.connect(self.exec_opt2)
         self.button3.setEnabled(False)
+        self.button4 = QPushButton('Clear route')
+        self.button4.setEnabled(False)
+        self.button4.clicked.connect(self.clear_route)
         self.label1 = QLabel('Delay (sec)')
         self.label2 = QLabel('Delay (sec)')
         self.delaytime1 = QLineEdit()
@@ -43,6 +46,7 @@ class MainWindow(QWidget):
         self.grid.addWidget(self.button1, 0, 0)
         self.grid.addWidget(self.button2, 0, 1)
         self.grid.addWidget(self.button3, 0, 2)
+        self.grid.addWidget(self.button4, 1, 0)
         self.box1 = QHBoxLayout()
         self.box2 = QHBoxLayout()
         self.box1.addWidget(self.label1)
@@ -58,6 +62,12 @@ class MainWindow(QWidget):
         self.canvas.clear_all()
         self.button2.setEnabled(True)
         self.button3.setEnabled(False)
+        self.button4.setEnabled(False)
+
+    def clear_route(self):
+        self.canvas.clear_route()
+        self.button2.setEnabled(True)
+        self.button3.setEnabled(False)
 
     def exec_nn(self):
         delaytime = self.delaytime1.text()
@@ -68,6 +78,7 @@ class MainWindow(QWidget):
         self.canvas.nearest_neighbor(self.delay_nn)
         self.button2.setEnabled(False)
         self.button3.setEnabled(True)
+        self.button4.setEnabled(True)
 
     def exec_opt2(self):
         delaytime = self.delaytime2.text()
@@ -138,6 +149,13 @@ class CityMap(FigureCanvasQTAgg):
         self.ax.cla()
         self.init_axes()
         self.draw()
+
+    def clear_route(self):
+        if self.num_city is not None:
+            for line in self.ax.lines[self.num_city:]:
+                line.remove()
+            self.draw()
+            self.unfix_instance()
 
     def fix_instance(self):
         self.disconnect()
