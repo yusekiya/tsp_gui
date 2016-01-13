@@ -10,6 +10,7 @@ from PyQt4.QtGui import (QApplication, QWidget, QHBoxLayout,
                          QVBoxLayout, QGridLayout, QPushButton, QLabel,
                          QLineEdit)
 from PyQt4.QtGui import QDoubleValidator
+import PyQt4.QtCore as QtCore
 
 
 class MainWindow(QWidget):
@@ -24,6 +25,7 @@ class MainWindow(QWidget):
         self.setWindowTitle('TSP')
         self.setGeometry(50, 50, 1200, 800)
         self.canvas = CityMap(self)
+        self.canvas.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.button1 = QPushButton('Clear all')
         self.button1.clicked.connect(self.clear_fig)
         self.button2 = QPushButton('Nearest neighbor method')
@@ -98,6 +100,7 @@ class CityMap(FigureCanvasQTAgg):
         self.path = None
         self.init_dist = None
         self.current_dist = None
+        self.is_shift_held = False
         self.fig = plt.figure()
         super(CityMap, self).__init__(self.fig)
         self.setParent(parent)
@@ -115,9 +118,18 @@ class CityMap(FigureCanvasQTAgg):
                                       'Initial distance\n\n\nCurrent distance\n',
                                       va='top')
 
+    def on_shift_press(self, event):
+        if event.key == 'shift':
+            self.is_shift_held = True
+
+    def on_shift_release(self, event):
+        if event.key == 'shift':
+            self.is_shift_held = False
+
     def put_city(self, event):
         if event.inaxes != self.ax: return
-        if event.button != 1: return
+        if event.button != 1 or self.is_shift_held:
+            return
         x = event.xdata
         y = event.ydata
         self.ax.plot(x, y, 'bo', markersize=10, picker=5)
@@ -129,6 +141,15 @@ class CityMap(FigureCanvasQTAgg):
         thisline = event.artist
         thisline.remove()
         self.draw()
+
+    def select_init_city(self, event):
+        mouseevent = event.mouseevent
+        if mouseevent.button != 1 or\
+           not self.is_shift_held:
+            return
+        thisline = event.artist
+        self.ax.lines.remove(thisline)
+        self.ax.lines.insert(0, thisline)
 
     def getx(self):
         lines = self.ax.lines
@@ -179,11 +200,17 @@ class CityMap(FigureCanvasQTAgg):
         self.cid_putdot = self.fig.canvas.mpl_connect('button_press_event', self.put_city)
         self.cid_remove = self.fig.canvas.mpl_connect('pick_event', self.remove_city)
         self.cid_clear = self.fig.canvas.mpl_connect('button_press_event', self.clear_dots)
+        self.cid_press_shift = self.fig.canvas.mpl_connect('key_press_event', self.on_shift_press)
+        self.cid_release_shift = self.fig.canvas.mpl_connect('key_release_event', self.on_shift_release)
+        self.cid_select_init = self.fig.canvas.mpl_connect('pick_event', self.select_init_city)
 
     def disconnect(self):
         self.fig.canvas.mpl_disconnect(self.cid_putdot)
         self.fig.canvas.mpl_disconnect(self.cid_remove)
         self.fig.canvas.mpl_disconnect(self.cid_clear)
+        self.fig.canvas.mpl_disconnect(self.cid_press_shift)
+        self.fig.canvas.mpl_disconnect(self.cid_release_shift)
+        self.fig.canvas.mpl_disconnect(self.cid_select_init)
 
     def nearest_neighbor(self, delay=0.0):
         self.fix_instance()
